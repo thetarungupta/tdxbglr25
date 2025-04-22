@@ -1,0 +1,21 @@
+<!-- public/index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Slack Button App</title>
+</head>
+<body>
+  <h1>Post to Slack</h1>
+  <button onclick="postMessage()">Post Message</button>
+
+  <script>
+    function postMessage() {
+      fetch('/post-message', { method: 'POST' })
+        .then(res => res.json())
+        .then(data => alert(data.message))
+        .catch(err => alert('Error posting message'));
+    }
+  </script>
+</body>
+</html>
