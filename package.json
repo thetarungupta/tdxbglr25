@@ -1,10 +1,10 @@
 {
   "name": "slack-demo",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node index.js"
+    "start": "node app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
   "author": "",
@@ -17,5 +17,13 @@
     "cors": "^2.8.5",
     "dotenv": "^16.5.0",
     "express": "^5.1.0"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/thetarungupta/tdxbglr25.git"
+  },
+  "bugs": {
+    "url": "https://github.com/thetarungupta/tdxbglr25/issues"
+  },
+  "homepage": "https://github.com/thetarungupta/tdxbglr25#readme"
 }
