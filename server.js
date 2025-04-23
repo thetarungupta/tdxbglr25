@@ -58,12 +58,18 @@ app.post('/post-message', async (req, res) => {
 });
 
 app.post('/slack/hello', (req, res) => {
-  res.send('Hello from Heroku!');
+  const userId = req.body.user_id; // 👈 Get user_id from the request body
+
+  res.json({
+    response_type: 'in_channel', // or 'ephemeral'
+    text: `👋 Hello everyone from Heroku! *Welcome our new member*, <@${userId}>! 🎉`
+  });
 });
+
 
 app.post('/slack/tdxinfo', (req, res) => {
   const responsePayload = {
-    response_type: 'in_channel', // or 'ephemeral' for private messages
+    response_type: 'ephemeral', // or 'ephemeral' for private messages . in_channel
     blocks: [
       {
         type: 'section',
