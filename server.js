@@ -49,7 +49,7 @@ app.post('/post-message', async (req, res) => {
   }
 });
 
-app.post('/slack/action', async (req, res) => {
+app.post('/slack/actions', async (req, res) => {
   try {
     // Parse the payload from Slack (it comes as a JSON string)
     const payload = JSON.parse(req.body.payload);
