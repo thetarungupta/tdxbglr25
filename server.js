@@ -18,18 +18,26 @@ app.use(express.static('public'));
 app.post('/post-message', async (req, res) => {
   try {
     await axios.post('https://slack.com/api/chat.postMessage', {
-      channel: CHANNEL_ID,    // Your channel ID
-      text: 'Hello from your Slack app! 🎉',  // Simple text
-      attachments: [
+      channel: CHANNEL_ID,
+      text: 'Hello from your Slack app! 🎉',
+      blocks: [
         {
-          text: 'Click below to interact:',
-          fallback: 'Button not supported on this device',
-          callback_id: 'button_click',
-          actions: [
+          type: 'section',
+          text: {
+            type: 'mrkdwn',
+            text: 'Click the button below to interact:'
+          }
+        },
+        {
+          type: 'actions',
+          elements: [
             {
-              name: 'button',
-              text: 'Click Me!',
               type: 'button',
+              text: {
+                type: 'plain_text',
+                text: 'Click Me!'
+              },
+              action_id: 'button_click',
               value: 'button_clicked'
             }
           ]
@@ -37,7 +45,7 @@ app.post('/post-message', async (req, res) => {
       ]
     }, {
       headers: {
-        Authorization: `Bearer ${SLACK_TOKEN}`,  // Ensure your token is set
+        Authorization: `Bearer ${SLACK_TOKEN}`,
         'Content-Type': 'application/json',
       }
     });
@@ -48,6 +56,179 @@ app.post('/post-message', async (req, res) => {
     res.status(500).send({ message: 'Error posting to Slack' });
   }
 });
+
+app.post('/slack/hello', (req, res) => {
+  res.send('Hello from Heroku!');
+});
+
+app.post('/slack/tdxinfo', (req, res) => {
+  const responsePayload = {
+    response_type: 'in_channel', // or 'ephemeral' for private messages
+    blocks: [
+      {
+        type: 'section',
+        text: {
+          type: 'mrkdwn',
+          text: '*Welcome to TDX Info!* :tada:\nHere’s everything you need to know.'
+        }
+      },
+      {
+        type: 'divider'
+      },
+      {
+        type: 'section',
+        fields: [
+          {
+            type: 'mrkdwn',
+            text: '*Location:*\nBengaluru & Salesforce+'
+          },
+          {
+            type: 'mrkdwn',
+            text: '*Date:*\nMay 2-3, 2025'
+          }
+        ]
+      },
+      {
+        type: 'section',
+        text: {
+          type: 'mrkdwn',
+          text: 'Check out the full agenda and register below:'
+        }
+      },
+      {
+        type: 'actions',
+        elements: [
+          {
+            type: 'button',
+            text: {
+              type: 'plain_text',
+              text: 'TDX Website'
+            },
+            url: 'https://www.salesforce.com/tdx',
+            action_id: 'tdx_website'
+          }
+        ]
+      }
+      ,
+      {
+        type: 'actions',
+        elements: [
+          {
+            type: 'button',
+            text: {
+              type: 'plain_text',
+              text: 'TDX Salesforce+'
+            },
+            url: 'https://www.salesforce.com/tdx',
+            action_id: 'tdx_website'
+          }
+        ]
+      }
+    ]
+  };
+
+  res.json(responsePayload);
+});
+
+
+
+app.post('/slack/events', async (req, res) => {
+  const { type, event } = req.body;
+
+  if (type === 'url_verification') {
+    return res.send({ challenge: req.body.challenge });
+  }
+
+  if (event && event.type === 'app_home_opened') {
+    // Now use axios to call views.publish manually
+    await axios.post('https://slack.com/api/views.publish', {
+      user_id: event.user,
+      view: {
+        type: 'home',
+        callback_id: 'home_view',
+        blocks: [
+          {
+            type: 'section',
+            text: {
+              type: 'mrkdwn',
+              text: `👋 *Welcome to your Slack App on Heroku*, <@${event.user}>!`
+            }
+          },
+          {
+            type: 'section',
+            text: {
+              type: 'mrkdwn',
+              text: "This app is deployed on Heroku and built to enhance your Slack workspace experience with interactive features and info-packed commands. 🚀"
+            }
+          },
+          // {
+          //   type: 'actions',
+          //   elements: [
+          //     {
+          //       type: 'button',
+          //       text: {
+          //         type: 'plain_text',
+          //         text: '✨ Get a Fun Fact'
+          //       },
+          //       action_id: 'heroko_path'
+          //     }
+          //   ]
+          // },
+          {
+            type: 'actions',
+            elements: [
+              {
+                type: 'button',
+                text: {
+                  type: 'plain_text',
+                  text: 'Heroku Dev Center'
+                },
+                url: 'https://devcenter.heroku.com/',
+                action_id: 'heroko_path'
+              }
+            ]
+          },
+          {
+            type: 'actions',
+            elements: [
+              {
+                type: 'button',
+                text: {
+                  type: 'plain_text',
+                  text: 'Slack Dev Center'
+                },
+                url: 'https://slack.dev/',
+                action_id: 'slack_path'
+              }
+            ]
+          },
+          {
+            type: 'divider'
+          },
+          {
+            type: 'context',
+            elements: [
+              {
+                type: 'mrkdwn',
+                text: "_Proudly built & deployed by <@TarunGupta> using Slack & Deployed on Heroku. ✌️_"
+              }
+            ]
+          }
+        ]
+      },
+    }, {
+      headers: {
+        Authorization: `Bearer ${SLACK_TOKEN}`,
+        'Content-Type': 'application/json',
+      },
+    });
+
+    return res.status(200).send();
+  }
+
+  res.sendStatus(200);
+});
+
 
 app.post('/slack/actions', async (req, res) => {
   try {
@@ -83,7 +264,6 @@ app.post('/slack/actions', async (req, res) => {
     res.status(500).send({ message: 'Error handling the interaction' });
   }
 });
-
 
 
 app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
