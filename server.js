@@ -165,22 +165,7 @@ app.post('/slack/events', async (req, res) => {
             text: {
               type: 'mrkdwn',
               text: "This app is deployed on Heroku and built to enhance your Slack workspace experience with interactive features and info-packed commands. 🚀"
-            }
-          },
-          // {
-          //   type: 'actions',
-          //   elements: [
-          //     {
-          //       type: 'button',
-          //       text: {
-          //         type: 'plain_text',
-          //         text: '✨ Get a Fun Fact'
-          //       },
-          //       action_id: 'heroko_path'
-          //     }
-          //   ]
-          // },
-          {
+            },
             type: 'actions',
             elements: [
               {
